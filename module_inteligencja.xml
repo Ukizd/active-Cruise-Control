@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_inteligencja" default="compile.module.inteligencja">
+  <dirname property="module.inteligencja.basedir" file="${ant.file.module_inteligencja}"/>
+  
+  <property name="module.jdk.home.inteligencja" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.inteligencja" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.inteligencja" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.inteligencja" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="inteligencja.output.dir" value="${module.inteligencja.basedir}/out/production/Inteligencja"/>
+  <property name="inteligencja.testoutput.dir" value="${module.inteligencja.basedir}/out/test/Inteligencja"/>
+  
+  <path id="inteligencja.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="inteligencja.module.production.classpath">
+    <path refid="${module.jdk.classpath.inteligencja}"/>
+  </path>
+  
+  <path id="inteligencja.runtime.production.module.classpath">
+    <pathelement location="${inteligencja.output.dir}"/>
+  </path>
+  
+  <path id="inteligencja.module.classpath">
+    <path refid="${module.jdk.classpath.inteligencja}"/>
+    <pathelement location="${inteligencja.output.dir}"/>
+  </path>
+  
+  <path id="inteligencja.runtime.module.classpath">
+    <pathelement location="${inteligencja.testoutput.dir}"/>
+    <pathelement location="${inteligencja.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.inteligencja">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.inteligencja">
+    <patternset refid="excluded.from.module.inteligencja"/>
+  </patternset>
+  
+  <path id="inteligencja.module.sourcepath">
+    <dirset dir="${module.inteligencja.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.inteligencja" depends="compile.module.inteligencja.production,compile.module.inteligencja.tests" description="Compile module Inteligencja"/>
+  
+  <target name="compile.module.inteligencja.production" depends="register.custom.compilers" description="Compile module Inteligencja; production classes">
+    <mkdir dir="${inteligencja.output.dir}"/>
+    <javac2 destdir="${inteligencja.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.inteligencja}/javac">
+      <compilerarg line="${compiler.args.inteligencja}"/>
+      <bootclasspath refid="inteligencja.module.bootclasspath"/>
+      <classpath refid="inteligencja.module.production.classpath"/>
+      <src refid="inteligencja.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.inteligencja"/>
+    </javac2>
+    
+    <copy todir="${inteligencja.output.dir}">
+      <fileset dir="${module.inteligencja.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.inteligencja.tests" depends="register.custom.compilers,compile.module.inteligencja.production" description="compile module Inteligencja; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.inteligencja" description="cleanup module">
+    <delete dir="${inteligencja.output.dir}"/>
+    <delete dir="${inteligencja.testoutput.dir}"/>
+  </target>
+</project>

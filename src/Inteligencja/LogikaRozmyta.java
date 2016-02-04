@@ -1,14 +1,15 @@
+package Inteligencja;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Created by Kamil on 08.01.2016.
  */
-public class OdczytTermów {
+public class LogikaRozmyta {
     public double[][] termOdleglosc;
     public double[][] termPrzyspieszenie;
     public double[][] zbiorWyjsciowy;
@@ -17,14 +18,37 @@ public class OdczytTermów {
     private double uClose;
     private double uNormal;
     private double uLong;
+    private double odlegloscMiedzySamochodami;
+    private double wynik;
+    private double wynikKoncowy;
 
 
-    public OdczytTermów(String lokalizacjaTermuOdleglosc, String lokalizacjaTermuPrzyspieszenie) {
+
+    public LogikaRozmyta(String lokalizacjaTermuOdleglosc, String lokalizacjaTermuPrzyspieszenie) {
         this.lokalizacjaTermuOdleglosc = lokalizacjaTermuOdleglosc;
         this.lokalizacjaTermuPrzyspieszenie = lokalizacjaTermuPrzyspieszenie;
-        zbiorWyjsciowy = new double[200][5];
+        zbiorWyjsciowy = new double[401][5];
+        odczytTermuOdleglosc();
+        odczytTermuPrzyspieszenie();
+        //silnikLogikiRozmytej(liczba);
     }
 
+
+    /*
+    Metoda ktora przeprowadza przez cały proces logiki rozmytej
+     */
+    public double silnikLogikiRozmytej(double odlegloscMiedzySamochodami) {
+        this.odlegloscMiedzySamochodami=odlegloscMiedzySamochodami;
+        rozmycieWartosci(odlegloscMiedzySamochodami);
+        reguly();
+        agregacja();
+        wyznaczenieSrodkaCiezkosci();
+        return wynikKoncowy;
+    }
+
+    /*
+    Odczyt zbioru Odleglosc
+     */
     public void odczytTermuOdleglosc() {
 
         Path sciezka = Paths.get(lokalizacjaTermuOdleglosc);
@@ -50,7 +74,9 @@ public class OdczytTermów {
         }
 
     }
-
+/*
+Odczyt zbioru Przyspieszenie
+ */
     public void odczytTermuPrzyspieszenie() {
         Path sciezka = Paths.get(lokalizacjaTermuPrzyspieszenie);
         ArrayList<String> odczyt = new ArrayList<String>();
@@ -76,12 +102,22 @@ public class OdczytTermów {
 
 
     }
+/*
+Rozmycie zmiennej lingwistycznej Odleglosc
+ */
+    public void rozmycieWartosci(double liczba) {
+        //Scanner sc = new Scanner(System.in);
 
-    public void odczytTermu() {
-        Scanner sc = new Scanner(System.in);
 
 
-            double liczba = sc.nextDouble();
+//        double liczba;
+
+//        for (int i = 0; i <100 ; i++)
+//            liczba=(double)i;
+
+
+
+
 //        for (int i = 0; i < 801; i++) {
 //            for (int j = 0; j < 4; j++) {
 //                System.out.println(termOdleglosc[i][j]);
@@ -105,36 +141,39 @@ public class OdczytTermów {
 //
 //            }
 
-        //System.out.println(uClose);
+//        System.out.println(uClose);
 //        System.out.println(uNormal);
 //        System.out.println(uLong);
-        reguly();
+
     }
+    /*
+    Reguły
+     */
     public void reguly() {
         //R1: Jeżeli odległość = Close TO przyspiszenie = Deceleration
         if (uClose > 0) {
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 401; i++) {
                 zbiorWyjsciowy[i][0]=i;
                 zbiorWyjsciowy[i][1] = Math.min(termPrzyspieszenie[i][1], uClose);
 
             }
         }
         if (uNormal > 0) {
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 401; i++) {
                 zbiorWyjsciowy[i][0]=i;
                 zbiorWyjsciowy[i][2] = Math.min(termPrzyspieszenie[i][2], uNormal);
 
             }
         }
         if (uLong > 0) {
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 401; i++) {
                 zbiorWyjsciowy[i][0]=i;
                 zbiorWyjsciowy[i][3] = Math.min(termPrzyspieszenie[i][3], uLong);
 
             }
         }
 
-//        for (int i = 1; i < 200; i++) {
+//        for (int i = 1; i < 401; i++) {
 //            for (int j = 1; j < 4; j++) {
 //                if(j==1)
 //                System.out.print("Hamowanie"+zbiorWyjsciowy[i][j]+" ");
@@ -146,20 +185,24 @@ public class OdczytTermów {
 //            }
 ////        }
 //        }
-        agregacja();
-    }
 
+    }
+/*
+agregacja (czyli max ze zbiorow)
+ */
     public void agregacja() {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 401; i++) {
             zbiorWyjsciowy[i][4]=Math.max(zbiorWyjsciowy[i][1],Math.max(zbiorWyjsciowy[i][2],zbiorWyjsciowy[i][3]));
         }
-        for (int i = 0; i <200 ; i++) {
-            System.out.println(zbiorWyjsciowy[i][4]);
+//        for (int i = 0; i <400 ; i++) {
+//            System.out.println(zbiorWyjsciowy[i][4]);
+//
+//        }
 
-        }
-        wyznaczenieSrodkaCiezkosci();
     }
-
+/*
+Wyznaczenie wartosci y5
+ */
     public void wyznaczenieSrodkaCiezkosci() {
 //        g = 0;    //licznik
 //        d = 0;    //mianownik
@@ -174,12 +217,15 @@ public class OdczytTermów {
 //        disp(y,'y = ');
         double licznik=0;
         double mianownik = 0;
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 401; i++) {
             licznik=licznik+zbiorWyjsciowy[i][4]*i;
             mianownik=mianownik+zbiorWyjsciowy[i][4];
         }
-        double wynik = licznik/mianownik;
-        System.out.println("Wynik "+ wynik);
-        System.out.println(termPrzyspieszenie[(int) wynik][0]);
+        wynik = licznik/mianownik;
+        //System.out.println("Wynik "+ wynik);
+        //System.out.println("Wynik: "+termPrzyspieszenie[(int) wynik][0]);
+        wynikKoncowy=termPrzyspieszenie[(int) wynik][0];
     }
+
+
 }
